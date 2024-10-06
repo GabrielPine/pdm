@@ -2,18 +2,41 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import React from 'react'
 import ReactDOM, { render } from 'react-dom'
+import EstacaoClimatica from './EstacaoClimatica'
+import Loading from './Loading'
 
 class App extends React.Component {
     
-    constructor(props){
-        super(props)
-        this.state={
-            latitude: null,
+    state = {
+        latitude: null,
             longitude: null,
             estacao: null,
             data: null,
-            icone: null
-        }
+            icone: null,
+            mensagemDeErro: null
+    }
+    
+    constructor(props){
+        super(props)
+        //this.state={
+           // latitude: null,
+            //longitude: null,
+            //estacao: null,
+            //data: null,
+            //icone: null
+        //}
+        console.log('constructor')
+    }
+
+    componentDidMount(){
+        console.log('componentDidMount')
+        this.obterLocalizacao()
+    }
+    componentDidUpdate(){
+        console.log('componentDidUpdate')
+    }
+    componentWillUnmount(){
+        console.log('componentWillUnmount')
     }
 
     obterEstacao = (data, latitude) => {
@@ -77,34 +100,31 @@ class App extends React.Component {
     }
 
     render(){
+        console.log('render')
         return(
             <div className='container p-4 border mt-2'>
                 <div className="row justify-content-center">
                     <div className="col-sm-12 col-md-8">
-                        <div className="card">
-                            <div className="card-body">
-                                <div 
-                                style={{height: '6rem'}}
-                                className="d-flex align-items-center rounded mb-2">
-                                    <i className={`fa-solid fa-5x ${this.state.icone}`}></i>
-                                    <p className="w-75 ms-3 text-center fs-1">{this.state.estacao}</p>
-                                </div>
-                                <p className="text-center">
-                                    {
-                                        this.state.latitude ? 
-                                            `Coordenadas: ${this.state.latitude}, ${this.state.longitude}. Data: ${this.state.data}`
-                                        :
-                                            this.state.mensagemDeErro ?
-                                                this.state.mensagemDeErro
-                                            :
-                                                'Clique no Botão para saber a sua estação climática'
-                                    }
-                                </p>
-                                <button 
-                                onClick={this.obterLocalizacao}
-                                className="btn btn-outline-primary w-100 mt-2">Qual a minha estação?</button>
-                            </div>
-                        </div>
+                        {
+                            (!this.state.latitude && !this.state.mensagemDeErro) ?
+                                <Loading 
+                                mensagem = "Por favor, responda à solicitação de permissão."/>
+                            :
+                            this.state.mensagemDeErro ?
+                            <p>
+                                É preciso dar permissão de acesso a localização
+                            </p>
+                        :
+                        <EstacaoClimatica 
+                            icone={this.state.icone}
+                            latitude={this.state.latitude}
+                            estacao={this.state.estacao}
+                            longitude={this.state.longitude}
+                            data={this.state.data}
+                            mensagemDeErro={this.state.mensagemDeErro}
+                            obterLocalizacao={this.obterLocalizacao}
+                        />
+                        }
                     </div>
                 </div>
             </div>
